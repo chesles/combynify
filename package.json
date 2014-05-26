@@ -1,0 +1,24 @@
+{
+  "name": "combynify",
+  "version": "0.0.1",
+  "description": "combyne precompiler for browserify",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "John Chesley <john@chesl.es>",
+  "license": "MIT",
+  "dependencies": {
+    "combyne": "^0.3.5",
+    "through2": "^0.4.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chesles/combynify"
+  },
+  "keywords": [
+    "combyne",
+    "browserify",
+    "browserify-transform"
+  ]
+}
