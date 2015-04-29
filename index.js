@@ -2,6 +2,7 @@ var through = require('through2')
 var combyne = require('combyne')
 
 var extensions = {
+  html: 1,
   cmb: 1,
   cmbn: 1,
   combyne: 1,
