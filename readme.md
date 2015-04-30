@@ -2,6 +2,12 @@
 
 [combyne][combyne] precompiler plugin for [browserify][browserify].
 
+# features
+
+- Optimizes templates into dependency-free isolated objects
+- Recursively bundles all referenced filters, partials, and template
+  inheritance
+
 # usage
 
 Install `combynify` from npm, probably as a devDependency:

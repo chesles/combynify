@@ -1,6 +1,6 @@
 {
   "name": "combynify",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "combyne precompiler for browserify",
   "main": "index.js",
   "scripts": {
