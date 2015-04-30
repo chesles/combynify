@@ -9,8 +9,9 @@
   "author": "John Chesley <john@chesl.es>",
   "license": "MIT",
   "dependencies": {
-    "combyne": "^0.3.5",
-    "through2": "^0.4.2"
+    "combyne": "^0.7.0",
+    "through2": "^0.4.2",
+    "visit-combyne": "^1.0.1"
   },
   "repository": {
     "type": "git",
