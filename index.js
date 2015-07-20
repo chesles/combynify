@@ -52,13 +52,13 @@ var processTemplate = function(templateSource, settings, callback) {
 
   // Map all partials to functions.
   partials.forEach(function(name) {
-    template._partials[name] = path.join(root, name + '.html');
+    template._partials[name] = path.resolve(path.join(root, name + '.html'));
   });
 
   // Map all extend to functions.
   extend.forEach(function(render) {
     var name = render.template;
-    var superTemplate = path.join(root, name + '.html');
+    var superTemplate = path.resolve(path.join(root, name + '.html'));
 
     // Pre-cache this template.
     extendsCache[render.partial] = true;
@@ -91,10 +91,10 @@ var processTemplate = function(templateSource, settings, callback) {
   callback.call(this, template);
 };
 
-function combynify(file) {
+function combynify(file, settings) {
   if (!extensions[file.split('.').pop()]) return through();
 
-  var settings = {};
+  settings = settings || {};
 
   // Mimic how the actual Combyne stores.
   settings._filters = {};
