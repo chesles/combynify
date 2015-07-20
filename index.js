@@ -11,7 +11,6 @@ var extensions = {
   cmb: 1,
   cmbn: 1,
   combyne: 1,
-
 };
 
 var processTemplate = function(templateSource, settings, callback) {
@@ -47,48 +46,36 @@ var processTemplate = function(templateSource, settings, callback) {
   var filtersDir = settings.filtersDir || 'filters';
 
   filters.forEach(function(filterName) {
-    var filtersPath = path.join(root, filtersDir, filterName);
-    var filter = require(filtersPath);
-
     // Register the exported function.
-    template.registerFilter(filterName, filter);
+    template._filters[filterName] = path.join(root, filtersDir, filterName);
   });
 
   // Map all partials to functions.
   partials.forEach(function(name) {
-    var source = fs.readFileSync(path.join(root, name + '.html')).toString();
-    // The last argument of this call is the noparse option that
-    // specifies the virtual partial should not be loaded.
-    processTemplate(source, settings, function(render) {
-      template.registerPartial(name, render);
-    });
+    template._partials[name] = path.resolve(path.join(root, name + '.html'));
   });
 
   // Map all extend to functions.
   extend.forEach(function(render) {
     var name = render.template;
+    var superTemplate = path.resolve(path.join(root, name + '.html'));
 
     // Pre-cache this template.
     extendsCache[render.partial] = true;
 
-    // The last argument of this call is the noparse option that
-    // specifies the virtual partial should not be loaded.
-    var source = fs.readFileSync(path.join(root, name + '.html')).toString();
-    processTemplate(source, settings, function(superTemplate) {
-      superTemplate.registerPartial(render.partial, template);
-      template.registerPartial(name, superTemplate);
-    });
+    require(superTemplate)._partials[render.partial] = template;
+    template._partials[name] = superTemplate;
   });
 
   // Augment the template source to include dependencies.
   var lines = template.source.split('\n');
 
   partials = Object.keys(template._partials).map(function(name) {
-    return '"' + name + '":' + template._partials[name].source;
+    return '"' + name + '": require("' + template._partials[name] + '")';
   });
 
   filters = Object.keys(template._filters).map(function(name) {
-    return '"' + name + '":' + String(template._filters[name]).split('\n').join('');
+    return '"' + name + '": require("' + template._filters[name] + '")';
   });
 
   lines[1] = '_partials: {' + partials.join(',') + '},';
@@ -104,15 +91,16 @@ var processTemplate = function(templateSource, settings, callback) {
   callback.call(this, template);
 };
 
-function combynify(file) {
+function combynify(file, settings) {
   if (!extensions[file.split('.').pop()]) return through();
 
-  var settings = {};
+  settings = settings || {};
 
   // Mimic how the actual Combyne stores.
   settings._filters = {};
   settings._partials = {};
   settings.root = settings.root || path.join(process.cwd(), 'views');
+  settings._filepath = file;
 
   var chunks = [];
 
