@@ -109,9 +109,15 @@ function combynify(file, settings) {
   }
 
   return through(parts, function(callback) {
-    processTemplate.call(this, chunks.join(''), settings, function(template) {
-      callback();
-    });
+    try {
+      processTemplate.call(this, chunks.join(''), settings, function(template) {
+        callback();
+      });
+    } catch( err ) {
+      // Annotate error with the file in which it originated
+      err.message = err.message + ' in ' + file;
+      throw err;
+    }
   });
 }
 
