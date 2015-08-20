@@ -63,7 +63,7 @@ var processTemplate = function(templateSource, settings, callback) {
     // Pre-cache this template.
     extendsCache[render.partial] = true;
 
-    require(superTemplate)._partials[render.partial] = template;
+    // Set the partial to the super template.
     template._partials[name] = superTemplate;
   });
 
@@ -78,6 +78,7 @@ var processTemplate = function(templateSource, settings, callback) {
     return '"' + name + '": require("' + template._filters[name] + '")';
   });
 
+  // This replaces the partials and filters inline.
   lines[1] = '_partials: {' + partials.join(',') + '},';
   lines[2] = '_filters: {' + filters.join(',') + '},';
 
