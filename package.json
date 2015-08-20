@@ -4,7 +4,8 @@
   "description": "combyne precompiler for browserify",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "jshint index.js tests/**/*.js",
+    "test": "mocha tests/specs/*.js"
   },
   "author": "John Chesley <john@chesl.es>",
   "license": "MIT",
@@ -21,5 +22,10 @@
     "combyne",
     "browserify",
     "browserify-transform"
-  ]
+  ],
+  "devDependencies": {
+    "browserify": "^11.0.1",
+    "jshint": "^2.8.0",
+    "mocha": "^2.2.5"
+  }
 }
