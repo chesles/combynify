@@ -16,6 +16,7 @@ var extensions = {
 var processTemplate = function(templateSource, settings, callback) {
   var root = settings.root;
   var template = combyne(templateSource);
+  var extension = settings.extension || '.html';
 
   // Find all extend.
   var extend = visitCombyne(template.tree.nodes, function(node) {
@@ -52,13 +53,13 @@ var processTemplate = function(templateSource, settings, callback) {
 
   // Map all partials to functions.
   partials.forEach(function(name) {
-    template._partials[name] = path.resolve(path.join(root, name + '.html'));
+    template._partials[name] = path.resolve(path.join(root, name + extension));
   });
 
   // Map all extend to functions.
   extend.forEach(function(render) {
     var name = render.template;
-    var superTemplate = path.resolve(path.join(root, name + '.html'));
+    var superTemplate = path.resolve(path.join(root, name + extension));
 
     // Pre-cache this template.
     extendsCache[render.partial] = true;
@@ -93,7 +94,12 @@ var processTemplate = function(templateSource, settings, callback) {
 };
 
 function combynify(file, settings) {
-  if (!extensions[file.split('.').pop()]) return through();
+  if (settings.extension && path.extname(file) !== settings.extension) {
+    return through();
+  }
+  else if (!extensions[file.split('.').pop()]) {
+    return through();
+  }
 
   settings = settings || {};
 
