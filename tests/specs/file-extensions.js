@@ -68,4 +68,32 @@ describe('file extension configuration', function() {
 
   });
 
+  describe('configured extensions', function() {
+
+    it('permits the use of an arbitrary file extension', function(done) {
+      browserify({
+        extension: '.custom',
+        root: testDirPath('configured-extension')
+      }, 'render-custom.js', function(err, tmpl) {
+        assert.equal(err, null, 'no error was thrown');
+        assert.equal(typeof tmpl, 'string', 'Template is rendered to a string');
+        assert.equal(execute(tmpl), 'I am a .custom template', 'Correct template is rendered');
+        done();
+      });
+    });
+
+    it('permits the use of a different arbitrary file extension', function(done) {
+      browserify({
+        extension: '.tmpl',
+        root: testDirPath('configured-extension')
+      }, 'render-tmpl.js', function(err, tmpl) {
+        assert.equal(err, null, 'no error was thrown');
+        assert.equal(typeof tmpl, 'string', 'Template is rendered to a string');
+        assert.equal(execute(tmpl), 'I am a .tmpl template', 'Correct template is rendered');
+        done();
+      });
+    });
+
+  });
+
 });
