@@ -2,6 +2,7 @@ var browserify = require('browserify');
 var combynify = require('../index');
 var path = require('path');
 var through = require('through2');
+var vm = require('vm');
 
 function noop() {}
 
@@ -27,17 +28,20 @@ function browserifyFile(settings, fileName, callback) {
 
   var filePath = path.join(settings.root, fileName || 'render.js');
 
-  var compiledTemplate = '';
+  var compiledModule = '';
 
-  var stream = browserify()
+  var stream = browserify(filePath, {
+      // Name the module's output for later access in `execute()`
+      standalone: 'output'
+    })
     .transform(combynify, settings)
-    .add(filePath)
     .bundle();
 
   stream.on('data', function(data) {
-    compiledTemplate += data;
+    compiledModule += data;
   }).on('end', function() {
-    callback(null, compiledTemplate);
+    // require('fs').writeFileSync(process.cwd() + '/salone.js', compiledModule);
+    callback(null, compiledModule);
   }).on('error', function(err) {
     callback(err);
   });
@@ -45,6 +49,14 @@ function browserifyFile(settings, fileName, callback) {
   return stream;
 }
 
+function execute(compiledModule) {
+  var context = {};
+  // Due to `standalone: 'render'` above, string property "output" is set on context
+  vm.runInNewContext(compiledModule, context);
+  return context.output.trim();
+}
+
 module.exports = {
-  browserify: browserifyFile
+  browserify: browserifyFile,
+  execute: execute
 };
