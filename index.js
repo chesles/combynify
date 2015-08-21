@@ -96,17 +96,19 @@ var processTemplate = function(templateSource, settings, callback) {
 function combynify(file, settings) {
   var fileExtension = path.extname(file);
 
-  // Ignore file if it does not match the specified file extension
-  if (settings.extension && fileExtension !== settings.extension) {
-    return through();
-  }
-  // Ignore file if it does not match any default supported file extensions
-  else if (!extensions[fileExtension]) {
-    return through();
-  }
-  // If no extension was provided, but file matches one of the default
-  // supported extensions, use that setting for any nested partials
-  else if (!settings.extension) {
+  if (settings.extension) {
+    if (fileExtension !== settings.extension) {
+      // File does not match the specified file extension
+      return through();
+    }
+  } else {
+    if (!extensions[fileExtension]) {
+      // File does not match any default supported file extensions
+      return through();
+    }
+
+    // No extension setting provided, but file matches a supported extension:
+    // use this extension for all subsequent templates
     settings.extension = fileExtension;
   }
 
