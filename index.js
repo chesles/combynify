@@ -7,10 +7,10 @@ var visitCombyne = require('visit-combyne');
 var extendsCache = {};
 
 var extensions = {
-  html: 1,
-  cmb: 1,
-  cmbn: 1,
-  combyne: 1,
+  '.html': 1,
+  '.cmb': 1,
+  '.cmbn': 1,
+  '.combyne': 1,
 };
 
 var processTemplate = function(templateSource, settings, callback) {
@@ -94,11 +94,20 @@ var processTemplate = function(templateSource, settings, callback) {
 };
 
 function combynify(file, settings) {
-  if (settings.extension && path.extname(file) !== settings.extension) {
+  var fileExtension = path.extname(file);
+
+  // Ignore file if it does not match the specified file extension
+  if (settings.extension && fileExtension !== settings.extension) {
     return through();
   }
-  else if (!extensions[file.split('.').pop()]) {
+  // Ignore file if it does not match any default supported file extensions
+  else if (!extensions[fileExtension]) {
     return through();
+  }
+  // If no extension was provided, but file matches one of the default
+  // supported extensions, use that setting for any nested partials
+  else if (!settings.extension) {
+    settings.extension = fileExtension;
   }
 
   settings = settings || {};
